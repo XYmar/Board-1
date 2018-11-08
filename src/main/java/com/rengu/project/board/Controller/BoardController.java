@@ -1,8 +1,10 @@
 package com.rengu.project.board.Controller;
 
 import com.rengu.project.board.Entity.BoardEntity;
+import com.rengu.project.board.Entity.LayoutDetailEntity;
 import com.rengu.project.board.Entity.ResultEntity;
 import com.rengu.project.board.Service.BoardService;
+import com.rengu.project.board.Service.LayoutService;
 import com.rengu.project.board.Service.ResultService;
 import com.rengu.project.board.Utils.IPUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,16 +14,19 @@ import org.springframework.data.web.PageableDefault;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.List;
 
 @RestController
 @RequestMapping(value = "/boards")
 public class BoardController {
 
     private final BoardService boardService;
+    private final LayoutService layoutService;
 
     @Autowired
-    public BoardController(BoardService boardService) {
+    public BoardController(BoardService boardService, LayoutService layoutService) {
         this.boardService = boardService;
+        this.layoutService = layoutService;
     }
 
     // 保存看板信息
@@ -62,5 +67,18 @@ public class BoardController {
     @GetMapping
     public ResultEntity getBoards(@PageableDefault(sort = "createTime", direction = Sort.Direction.DESC) Pageable pageable) {
         return ResultService.build(boardService.getBoards(pageable));
+    }
+
+    // 保存看板部署
+    @PostMapping(value = "/{boardId}/layout")
+    public ResultEntity saveLayoutByBoard(@PathVariable(value = "boardId") String boardId, @RequestBody List<LayoutDetailEntity> layoutDetailEntityList) {
+        return ResultService.build(layoutService.saveLayoutByBoard(boardService.getBoardById(boardId), layoutDetailEntityList));
+    }
+
+    // 查询看板布局
+    @GetMapping(value = "/{boardId}/layout")
+    public ResultEntity getLayoutByBoard(@PathVariable(value = "boardId") String boardId) {
+        System.out.println(boardId);
+        return ResultService.build(layoutService.getLayoutByBoard(boardService.getBoardById(boardId)));
     }
 }
