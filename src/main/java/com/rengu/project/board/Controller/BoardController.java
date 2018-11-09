@@ -78,7 +78,6 @@ public class BoardController {
     // 查询看板布局
     @GetMapping(value = "/{boardId}/layout")
     public ResultEntity getLayoutByBoard(@PathVariable(value = "boardId") String boardId) {
-        System.out.println(boardId);
         return ResultService.build(layoutService.getLayoutByBoard(boardService.getBoardById(boardId)));
     }
 }

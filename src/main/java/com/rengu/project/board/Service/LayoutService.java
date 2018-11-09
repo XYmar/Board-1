@@ -39,15 +39,13 @@ public class LayoutService {
         LayoutEntity layoutEntity = null;
         if (hasLayoutByBoard(boardEntity)) {
             layoutEntity = getLayoutByBoard(boardEntity);
-        } else {
-            layoutEntity = new LayoutEntity();
-            layoutEntity.setBoardEntity(boardEntity);
+            layoutRepository.delete(layoutEntity);
         }
+        layoutEntity = new LayoutEntity();
+        layoutEntity.setBoardEntity(boardEntity);
         if (layoutDetails.size() == 0) {
             throw new RuntimeException(ApplicationMessages.LAYOUT_DETAIL_ARGS_NOT_FOUND);
         }
-        // 清除已存在的布局
-        layoutDetailRepository.deleteAll(layoutEntity.getLayoutDetailEntities());
         layoutEntity.setLayoutDetailEntities(layoutDetails);
         return layoutRepository.save(layoutEntity);
     }
@@ -64,7 +62,7 @@ public class LayoutService {
     public LayoutEntity getLayoutByBoard(BoardEntity boardEntity) {
         Optional<LayoutEntity> layoutEntityOptional = layoutRepository.findAllByBoardEntity(boardEntity);
         if (!layoutEntityOptional.isPresent()) {
-            throw new RuntimeException(ApplicationMessages.BOARD_ID_NOT_FOUND + boardEntity.getId());
+            throw new RuntimeException(ApplicationMessages.LAYOUT_NOT_FOUND + "看板Id：" + boardEntity.getId());
         }
         return layoutEntityOptional.get();
     }

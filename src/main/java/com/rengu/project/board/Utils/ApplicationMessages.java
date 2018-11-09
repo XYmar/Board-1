@@ -30,6 +30,9 @@ public class ApplicationMessages {
     public static final String BOARD_ID_EXISTED = "该看板Id已存在：";
 
     // 布局相关提示信息
+    public static final String LAYOUT_ARGS_NOT_FOUND = "布局参数不存在或不合法：";
+    public static final String LAYOUT_NOT_FOUND = "未发现该布局：";
+    public static final String LAYOUT_EXISTED = "该布局已存在：";
     public static final String LAYOUT_DETAIL_ARGS_NOT_FOUND = "布局详情参数不存在或不合法：";
     public static final String LAYOUT_DETAIL_NOT_FOUND = "未发现该布局详情：";
     public static final String LAYOUT_DETAIL_EXISTED = "该布局详情已存在：";
