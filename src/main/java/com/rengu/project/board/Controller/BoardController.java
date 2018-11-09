@@ -80,4 +80,10 @@ public class BoardController {
     public ResultEntity getLayoutByBoard(@PathVariable(value = "boardId") String boardId) {
         return ResultService.build(layoutService.getLayoutByBoard(boardService.getBoardById(boardId)));
     }
+
+    // 加载看板布局
+    @GetMapping(value = "/show-layout")
+    public ResultEntity showBoardayout(HttpServletRequest httpServletRequest) {
+        return ResultService.build(layoutService.getLayoutByBoard(boardService.getBoardByIP(IPUtils.getRemoteIP(httpServletRequest))));
+    }
 }

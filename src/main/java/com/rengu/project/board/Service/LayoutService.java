@@ -3,7 +3,6 @@ package com.rengu.project.board.Service;
 import com.rengu.project.board.Entity.BoardEntity;
 import com.rengu.project.board.Entity.LayoutDetailEntity;
 import com.rengu.project.board.Entity.LayoutEntity;
-import com.rengu.project.board.Repository.LayoutDetailRepository;
 import com.rengu.project.board.Repository.LayoutRepository;
 import com.rengu.project.board.Utils.ApplicationMessages;
 import lombok.extern.slf4j.Slf4j;
@@ -26,12 +25,10 @@ import java.util.Optional;
 public class LayoutService {
 
     private final LayoutRepository layoutRepository;
-    private final LayoutDetailRepository layoutDetailRepository;
 
     @Autowired
-    public LayoutService(LayoutRepository layoutRepository, LayoutDetailRepository layoutDetailRepository) {
+    public LayoutService(LayoutRepository layoutRepository) {
         this.layoutRepository = layoutRepository;
-        this.layoutDetailRepository = layoutDetailRepository;
     }
 
     // 保存看版布局
@@ -39,10 +36,10 @@ public class LayoutService {
         LayoutEntity layoutEntity = null;
         if (hasLayoutByBoard(boardEntity)) {
             layoutEntity = getLayoutByBoard(boardEntity);
-            layoutRepository.delete(layoutEntity);
+        } else {
+            layoutEntity = new LayoutEntity();
+            layoutEntity.setBoardEntity(boardEntity);
         }
-        layoutEntity = new LayoutEntity();
-        layoutEntity.setBoardEntity(boardEntity);
         if (layoutDetails.size() == 0) {
             throw new RuntimeException(ApplicationMessages.LAYOUT_DETAIL_ARGS_NOT_FOUND);
         }

@@ -68,6 +68,18 @@ public class BoardService {
         return boardEntityOptional.get();
     }
 
+    // 根据IP查询看板
+    public BoardEntity getBoardByIP(String boardIP) {
+        if (StringUtils.isEmpty(boardIP)) {
+            throw new RuntimeException(ApplicationMessages.BOARD_IP_ARGS_NOT_FOUND);
+        }
+        Optional<BoardEntity> boardEntityOptional = boardRepository.findAllByIp(boardIP);
+        if (!boardEntityOptional.isPresent()) {
+            throw new RuntimeException(ApplicationMessages.BOARD_IP_NOT_FOUND + boardIP);
+        }
+        return boardEntityOptional.get();
+    }
+
     // 查询全部看板信息
     public Page<BoardEntity> getBoards(Pageable pageable) {
         return boardRepository.findAll(pageable);
