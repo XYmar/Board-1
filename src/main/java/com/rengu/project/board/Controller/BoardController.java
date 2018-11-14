@@ -2,6 +2,7 @@ package com.rengu.project.board.Controller;
 
 import com.rengu.project.board.Entity.BoardEntity;
 import com.rengu.project.board.Entity.LayoutDetailEntity;
+import com.rengu.project.board.Entity.PushMessageEntity;
 import com.rengu.project.board.Entity.ResultEntity;
 import com.rengu.project.board.Service.BoardService;
 import com.rengu.project.board.Service.LayoutService;
@@ -85,5 +86,10 @@ public class BoardController {
     @GetMapping(value = "/show-layout")
     public ResultEntity showBoardayout(HttpServletRequest httpServletRequest) {
         return ResultService.build(layoutService.getLayoutByBoard(boardService.getBoardByIP(IPUtils.getRemoteIP(httpServletRequest))));
+    }
+
+    @PostMapping(value = "/push-message")
+    public void pushMessageByBoard(@RequestParam(value = "boardIds") String[] boardIds, PushMessageEntity pushMessageEntity) {
+        boardService.pushMessageByBoard(boardIds, pushMessageEntity);
     }
 }

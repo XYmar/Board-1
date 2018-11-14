@@ -1,6 +1,7 @@
 package com.rengu.project.board.Service;
 
 import com.rengu.project.board.Entity.BoardEntity;
+import com.rengu.project.board.Entity.PushMessageEntity;
 import com.rengu.project.board.Repository.BoardRepository;
 import com.rengu.project.board.Utils.ApplicationMessages;
 import lombok.extern.slf4j.Slf4j;
@@ -9,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CachePut;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
@@ -21,10 +23,12 @@ import java.util.Optional;
 public class BoardService {
 
     private final BoardRepository boardRepository;
+    private final SimpMessagingTemplate simpMessagingTemplate;
 
     @Autowired
-    public BoardService(BoardRepository boardRepository) {
+    public BoardService(BoardRepository boardRepository, SimpMessagingTemplate simpMessagingTemplate) {
         this.boardRepository = boardRepository;
+        this.simpMessagingTemplate = simpMessagingTemplate;
     }
 
     // 保存看板信息
@@ -99,5 +103,17 @@ public class BoardService {
             return false;
         }
         return boardRepository.existsById(boardId);
+    }
+
+    // 看板推送消息
+    public void pushMessageByBoard(String[] boardIds, PushMessageEntity pushMessageEntity) {
+        if (boardIds == null || boardIds.length == 0) {
+            throw new RuntimeException("推送消息不存在");
+        }
+        for (String id : boardIds) {
+            BoardEntity boardEntity = getBoardById(id);
+            log.info("已发送消息给：" + boardEntity.getIp() + "，订阅地址：" + "/push-messages/" + boardEntity.getIp());
+            simpMessagingTemplate.convertAndSend("/push-messages/" + boardEntity.getIp(), pushMessageEntity);
+        }
     }
 }
