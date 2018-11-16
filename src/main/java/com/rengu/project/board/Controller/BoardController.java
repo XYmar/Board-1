@@ -1,9 +1,6 @@
 package com.rengu.project.board.Controller;
 
-import com.rengu.project.board.Entity.BoardEntity;
-import com.rengu.project.board.Entity.LayoutDetailEntity;
-import com.rengu.project.board.Entity.PushMessageEntity;
-import com.rengu.project.board.Entity.ResultEntity;
+import com.rengu.project.board.Entity.*;
 import com.rengu.project.board.Service.BoardService;
 import com.rengu.project.board.Service.LayoutService;
 import com.rengu.project.board.Service.ResultService;
@@ -12,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
@@ -23,11 +21,13 @@ public class BoardController {
 
     private final BoardService boardService;
     private final LayoutService layoutService;
+    private final SimpMessagingTemplate simpMessagingTemplate;
 
     @Autowired
-    public BoardController(BoardService boardService, LayoutService layoutService) {
+    public BoardController(BoardService boardService, LayoutService layoutService, SimpMessagingTemplate simpMessagingTemplate) {
         this.boardService = boardService;
         this.layoutService = layoutService;
+        this.simpMessagingTemplate = simpMessagingTemplate;
     }
 
     // 保存看板信息
@@ -73,7 +73,10 @@ public class BoardController {
     // 保存看板部署
     @PostMapping(value = "/{boardId}/layout")
     public ResultEntity saveLayoutByBoard(@PathVariable(value = "boardId") String boardId, @RequestBody List<LayoutDetailEntity> layoutDetailEntityList) {
-        return ResultService.build(layoutService.saveLayoutByBoard(boardService.getBoardById(boardId), layoutDetailEntityList));
+        BoardEntity boardEntity = boardService.getBoardById(boardId);
+        LayoutEntity layoutEntity = layoutService.saveLayoutByBoard(boardEntity, layoutDetailEntityList);
+        simpMessagingTemplate.convertAndSend("/refresh/" + boardEntity.getIp(), "true");
+        return ResultService.build(layoutEntity);
     }
 
     // 查询看板布局
@@ -91,5 +94,11 @@ public class BoardController {
     @PostMapping(value = "/push-message")
     public void pushMessageByBoard(@RequestParam(value = "boardIds") String[] boardIds, PushMessageEntity pushMessageEntity) {
         boardService.pushMessageByBoard(boardIds, pushMessageEntity);
+    }
+
+    // 获取看板IP
+    @GetMapping(value = "/IP")
+    public ResultEntity getIPByBoard(HttpServletRequest httpServletRequest) {
+        return ResultService.build(IPUtils.getRemoteIP(httpServletRequest));
     }
 }
