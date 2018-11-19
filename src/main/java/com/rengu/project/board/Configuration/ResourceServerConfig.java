@@ -17,8 +17,9 @@ public class ResourceServerConfig extends ResourceServerConfigurerAdapter {
         // 放行所有Option请求
         http.authorizeRequests().antMatchers(HttpMethod.OPTIONS).permitAll();
         // 放行看板注册接口
-        http.authorizeRequests().antMatchers(HttpMethod.POST, "/boards/register").permitAll();
+        http.authorizeRequests().antMatchers(HttpMethod.GET, "/boards/register").permitAll();
         http.authorizeRequests().antMatchers(HttpMethod.GET, "/boards/show-layout").permitAll();
+        http.authorizeRequests().antMatchers(HttpMethod.GET, "/boards/IP").permitAll();
         // 放行swagger2文档页面
         http.authorizeRequests().antMatchers("/swagger-ui.html", "/webjars/**", "/swagger-resources/**", "/v2/api-docs").permitAll();
         // 放行websocket接口

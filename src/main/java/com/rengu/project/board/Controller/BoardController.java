@@ -37,7 +37,7 @@ public class BoardController {
     }
 
     // 注册看板信息
-    @PostMapping(value = "/register")
+    @GetMapping(value = "/register")
     public ResultEntity registerBoard(HttpServletRequest httpServletRequest) {
         String remoteIP = IPUtils.getRemoteIP(httpServletRequest);
         BoardEntity boardEntity = new BoardEntity();
